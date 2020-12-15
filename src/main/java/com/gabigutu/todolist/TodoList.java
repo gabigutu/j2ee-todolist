@@ -2,6 +2,7 @@ package com.gabigutu.todolist;
 
 import java.io.*;
 import java.util.ArrayList;
+import jdk.internal.joptsimple.internal.Strings;
 
 public class TodoList {
 
@@ -30,16 +31,14 @@ public class TodoList {
 
     public void load(String filename) throws IOException {
         File file = new File(filename);
-        if (!file.exists()) throw new IOException("IOException: File does not exist");
+        if (!file.exists()) throw new IOException("IOException: File does not exist: " + file.getAbsolutePath());
 
         BufferedReader bufferedReader;
         try {
             bufferedReader = new BufferedReader(new FileReader(file));
             do {
                 String line = bufferedReader.readLine();
-                if ("".equals(line)) continue;
-                if (null == line) break;
-
+                if(Strings.isNullOrEmpty(line)) break;
                 parseLine(line);
             } while (true);
             bufferedReader.close();
@@ -50,15 +49,18 @@ public class TodoList {
 
     public void save(String filename) throws IOException  {
         File file = new File(filename);
-//        if (file.exists()) TODO: ask user if overwrite
-
-        BufferedWriter bufferedWriter =new BufferedWriter(new FileWriter(file));
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        System.out.println("Trying to save to file " + filename);
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, true));
+        System.out.println("There are " + todoElements.size() + " elements");
         for(TodoElement todoElement : todoElements) {
             bufferedWriter.write(
                     todoElement.getTitle() + ':' + todoElement.getDone() + "\n"
             );
         }
-
+        bufferedWriter.flush();
         bufferedWriter.close();
     }
 

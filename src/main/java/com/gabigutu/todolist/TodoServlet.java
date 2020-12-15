@@ -32,6 +32,10 @@ public class TodoServlet extends HttpServlet {
                 System.out.println("Save to file " + filename);
                 todoList.save(filename);
                 break;
+            case "loadFile":
+                System.out.println("Load file " + filename);
+                todoList.load(filename);
+                break;
             case "addElement":
                 String title = req.getParameter("title");
                 System.out.println("Add element " + title);
