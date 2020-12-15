@@ -21,6 +21,7 @@
     <span onclick="addTodoElement();" class="addBtn">Add1</span>
     <span onclick="save();" class="saveBtn">Save</span>
     <span onclick="load();" class="loadBtn">Load</span>
+    <span onclick="loadDb();" class="loadBtn">Load DB</span>
 </div>
 
 <ul id="myUL">
@@ -47,6 +48,10 @@
             'load': {
                 'uri': 'todo-servlet',
                 'action': 'loadFile'
+            },
+            'loadDb': {
+                'uri': 'todo-servlet',
+                'action': 'loadDb'
             },
         };
 
@@ -84,6 +89,20 @@
             // const json = jQuery.parseJSON(data);
 
             populateList(responseData.data.todoElements);
+        });
+    }
+
+    function loadDb() {
+        const action = 'loadDb';
+        const params = {
+            'action': PATHS[action]['action'],
+        };
+        $.post("<%=request.getContextPath()%>/" + PATHS[action]['uri'], params, function (responseData) {
+            // $( ".result" ).html( data );
+            // const json = jQuery.parseJSON(data);
+            console.log(data);
+
+            // populateList(responseData.data.todoElements);
         });
     }
 

@@ -51,6 +51,11 @@ public class TodoServlet extends HttpServlet {
                     System.err.println("JsonProcessingException: " + exception.getMessage());
                 }
                 break;
+            case "loadDb":
+                System.out.println("You asked to load from db");
+                DatabaseConnector databaseConnector = DatabaseConnector.getInstance();
+                databaseConnector.selectAll("todo_elements");
+                break;
             case "addElement":
                 String title = req.getParameter("title");
                 System.out.println("Add element " + title);
