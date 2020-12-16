@@ -1,4 +1,4 @@
-package com.gabigutu.todolist;
+package com.gabigutu.todolist.utils;
 
 import java.sql.*;
 import java.util.Properties;
@@ -11,10 +11,8 @@ public class DatabaseConnector {
     private DatabaseConnector() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Properties properties = new Properties();
-            properties.setProperty("user", System.getenv("J2EE_DB_USER"));
-            properties.setProperty("password", System.getenv("J2EE_DB_PASSWORD"));
-            connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/jee_database", properties);
+            ApplicationProperties applicationProperties = ApplicationProperties.getInstance();
+            connection = DriverManager.getConnection(applicationProperties.getProperty("J2EE_DB_URI"), applicationProperties.getProperties());
             this.selectDatabase();
         } catch (ClassNotFoundException exception) {
             System.err.println("ClassNotFoundException: " + exception.getMessage());
