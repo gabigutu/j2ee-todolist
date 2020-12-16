@@ -1,14 +1,20 @@
 package com.gabigutu.todolist;
 
 import java.io.*;
-import java.net.ServerSocket;
+import java.util.List;
+import java.util.Queue;
+import javax.persistence.Query;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.gabigutu.todolist.dto.TodoElementDTO;
 import com.gabigutu.todolist.helpers.ResponseHelper;
+import com.gabigutu.todolist.utils.DatabaseConnector;
+import com.gabigutu.todolist.utils.HibernateUtil;
+import org.hibernate.Session;
 
 @WebServlet(name = "todoServlet", value = "/todo-servlet")
 public class TodoServlet extends HttpServlet {
@@ -53,8 +59,8 @@ public class TodoServlet extends HttpServlet {
                 break;
             case "loadDb":
                 System.out.println("You asked to load from db");
-                DatabaseConnector databaseConnector = DatabaseConnector.getInstance();
-                databaseConnector.selectAll("todo_elements");
+//                loadDbClassic();
+                loadDbHibernate();
                 break;
             case "addElement":
                 String title = req.getParameter("title");
@@ -67,6 +73,22 @@ public class TodoServlet extends HttpServlet {
         }
 
         resp.setStatus(200);
+    }
+
+    private void loadDbHibernate() {
+        HibernateUtil hibernateUtil = HibernateUtil.getInstance();
+        Session session = hibernateUtil.getSession();
+        Query query = session.createQuery("Select entity from TodoElementDTO entity", TodoElementDTO.class);
+        List<TodoElementDTO> elements = query.getResultList();
+        for (TodoElementDTO element : elements) {
+            System.out.println("(HB) Extracted " + element.getId() + ", " + element.getTitle());
+        }
+
+    }
+
+    private void loadDbClassic() {
+        DatabaseConnector databaseConnector = DatabaseConnector.getInstance();
+        databaseConnector.selectAll("todo_elements");
     }
 
     public void destroy() {

@@ -1,19 +1,37 @@
-package com.gabigutu.todolist;
+package com.gabigutu.todolist.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
-public class TodoElement implements Serializable {
+@Entity
+@Table(name = "todo_elements")
+public class TodoElementDTO implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
 
     private String title;
+
     private boolean done;
 
-    public TodoElement(String title) {
+    private String created;
+
+
+    public TodoElementDTO() { }
+
+    public TodoElementDTO(String title) {
         this.title = title;
         done = false;
+    }
+
+
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -32,4 +50,11 @@ public class TodoElement implements Serializable {
         this.done = done;
     }
 
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
 }

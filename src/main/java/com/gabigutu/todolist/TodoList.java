@@ -2,6 +2,7 @@ package com.gabigutu.todolist;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.gabigutu.todolist.dto.TodoElementDTO;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -9,14 +10,14 @@ import java.util.ArrayList;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class TodoList implements Serializable {
 
-    ArrayList<TodoElement> todoElements;
+    ArrayList<TodoElementDTO> todoElementDTOS;
 
     public TodoList() {
         init();
     }
 
     private void init() {
-        todoElements = new ArrayList<>();
+        todoElementDTOS = new ArrayList<>();
     }
 
     private void parseLine(String line) {
@@ -31,9 +32,9 @@ public class TodoList implements Serializable {
     }
 
     public void addElement(String title, boolean done) {
-        TodoElement todoElement = new TodoElement(title);
-        todoElement.setDone(done);
-        todoElements.add(todoElement);
+        TodoElementDTO todoElementDTO = new TodoElementDTO(title);
+        todoElementDTO.setDone(done);
+        todoElementDTOS.add(todoElementDTO);
     }
 
     public TodoList load(String filename) throws IOException {
@@ -65,10 +66,10 @@ public class TodoList implements Serializable {
         }
         System.out.println("Trying to save to file " + filename);
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, true));
-        System.out.println("There are " + todoElements.size() + " elements");
-        for(TodoElement todoElement : todoElements) {
+        System.out.println("There are " + todoElementDTOS.size() + " elements");
+        for(TodoElementDTO todoElementDTO : todoElementDTOS) {
             bufferedWriter.write(
-                    todoElement.getTitle() + ':' + todoElement.getDone() + "\n"
+                    todoElementDTO.getTitle() + ':' + todoElementDTO.getDone() + "\n"
             );
         }
         bufferedWriter.flush();
