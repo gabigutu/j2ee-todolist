@@ -1,10 +1,7 @@
 package com.gabigutu.todolist;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import java.sql.*;
+import java.util.Properties;
 
 public class DatabaseConnector {
 
@@ -13,14 +10,24 @@ public class DatabaseConnector {
 
     private DatabaseConnector() {
         try {
-//            Context ctx = new InitialContext();
-//            DataSource dataSource = (DataSource) ctx.lookup("jdbc:mysql://127.0.0.1:3306/jee_database");
-//            connection = dataSource.getConnection();
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/jee_database?" +
-                    "user=root&password=root");
+            Properties properties = new Properties();
+            properties.setProperty("user", System.getenv("J2EE_DB_USER"));
+            properties.setProperty("password", System.getenv("J2EE_DB_PASSWORD"));
+            connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/jee_database", properties);
+            this.selectDatabase();
         } catch (ClassNotFoundException exception) {
             System.err.println("ClassNotFoundException: " + exception.getMessage());
+        } catch (SQLException exception) {
+            System.err.println("SQLException: " + exception.getMessage());
+        }
+    }
+
+    private void selectDatabase() {
+        try {
+            Statement statement = connection.createStatement();
+            String queryString = "USE jee_database ";
+            ResultSet resultSet = statement.executeQuery(queryString);
         } catch (SQLException exception) {
             System.err.println("SQLException: " + exception.getMessage());
         }
@@ -30,15 +37,17 @@ public class DatabaseConnector {
 //        connection.prepareStatement();
         try {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName);
+            String queryString = "SELECT * FROM " + tableName;
+            ResultSet resultSet = statement.executeQuery(queryString);
+            System.out.println("Executing: " + queryString);
             if (resultSet == null) throw new SQLException("SQLException: Cannot select entries from " + tableName);
-            do {
+            while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String title = resultSet.getString("title");
                 boolean done = resultSet.getBoolean("done");
-                Date date = resultSet.getDate("date_time");
+                Date date = resultSet.getDate("created");
                 System.out.println("Extracted " + id + ", " + title);
-            } while (resultSet.next());
+            }
         } catch (SQLException exception) {
             System.err.println("SQLException: " + exception.getMessage());
         }
