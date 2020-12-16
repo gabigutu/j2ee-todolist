@@ -1,3 +1,5 @@
+<%@ page import="com.gabigutu.todolist.dto.TodoElementDTO" %>
+<%@ page import="java.util.List" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="ro-RO">
@@ -25,12 +27,14 @@
 </div>
 
 <ul id="myUL">
-    <li>Hit the gym</li>
-    <li class="checked">Pay bills</li>
-    <li>Meet George</li>
-    <li>Buy eggs</li>
-    <li>Read a book</li>
-    <li>Organize office</li>
+    <%
+        List<TodoElementDTO> todoElementDTOS = (List<TodoElementDTO>) request.getAttribute("todoElementDTOS");
+        for(TodoElementDTO todoElementDTO : todoElementDTOS) {
+    %>
+        <li data-todoElementId="<%=todoElementDTO.getId()%>" class="<%=todoElementDTO.getDone() ? "checked" : ""%>"><%=todoElementDTO.getTitle()%>></li>
+    <%
+        }
+    %>
 </ul>
 
 <script type="text/javascript">
@@ -54,6 +58,11 @@
                 'action': 'loadDb'
             },
         };
+
+    jQuery('#myUL li').on('click', function () {
+        const todoElementId = jQuery(this).data('todoElementId');
+        console.log('You clicked ' + todoElementId);
+    });
 
     function addTodoElement() {
         const action = 'add';

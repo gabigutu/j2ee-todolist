@@ -2,7 +2,6 @@ package com.gabigutu.todolist;
 
 import java.io.*;
 import java.util.List;
-import java.util.Queue;
 import javax.persistence.Query;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -27,7 +26,17 @@ public class TodoServlet extends HttpServlet {
         filename = "mylist.todo";
     }
 
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        List<TodoElementDTO> todoElementDTOS = loadTodoElementsWithHibernate();
+        request.setAttribute("todoElementDTOS", todoElementDTOS);
+
+        try {
+            getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
+            response.setStatus(200);
+        } catch (ServletException exception) {
+            System.err.println("ServletException: " + exception.getMessage());
+        }
     }
 
     @Override
@@ -60,7 +69,7 @@ public class TodoServlet extends HttpServlet {
             case "loadDb":
                 System.out.println("You asked to load from db");
 //                loadDbClassic();
-                loadDbHibernate();
+                loadTodoElementsWithHibernate();
                 break;
             case "addElement":
                 String title = req.getParameter("title");
@@ -75,15 +84,11 @@ public class TodoServlet extends HttpServlet {
         resp.setStatus(200);
     }
 
-    private void loadDbHibernate() {
+    private List<TodoElementDTO> loadTodoElementsWithHibernate() {
         HibernateUtil hibernateUtil = HibernateUtil.getInstance();
         Session session = hibernateUtil.getSession();
         Query query = session.createQuery("Select entity from TodoElementDTO entity", TodoElementDTO.class);
-        List<TodoElementDTO> elements = query.getResultList();
-        for (TodoElementDTO element : elements) {
-            System.out.println("(HB) Extracted " + element.getId() + ", " + element.getTitle());
-        }
-
+        return (List<TodoElementDTO>) query.getResultList();
     }
 
     private void loadDbClassic() {
